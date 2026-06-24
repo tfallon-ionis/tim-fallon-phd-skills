@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legible Machine"
+  short_description: "Adjudicate software design tradeoffs"
+  default_prompt: "Use $legible-machine to adjudicate this software design decision and recommend the simplest legible path."
