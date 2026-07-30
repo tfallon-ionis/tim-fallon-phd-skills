@@ -1,0 +1,177 @@
+---
+name: seqspec-llm-authoring
+description: Author an evidence-backed Illumina seqspec profile through a source-first interview, emit a provenance sidecar, validate both artifacts, and present a graphical confirmation. Use when a user asks to create, document, reconstruct, or validate a sequencing-library/read structure as seqspec from vendor PDFs, kit webpages, protocols, or expert knowledge.
+---
+
+# Author a seqspec profile
+
+Produce one Illumina library-format plus raw-acquisition profile per invocation. Treat physical instrument runs, lanes, SRA Runs, biosamples, and FASTQ sets as related entities—not as the profile's identity.
+
+Seqspec describes genomics data through the sequencing-library molecule, the reads generated from it, and optional file associations. This skill deliberately emits a reusable, file-agnostic profile. The profile can annotate post-demultiplexing FASTQ data or supply structure to preprocessing and demultiplexing systems; do not call it a demultiplexing specification unless a consuming bounded context explicitly defines that application.
+
+Read [references/sidecar-format.md](references/sidecar-format.md) before emitting files. Read [references/barcode-semantics.md](references/barcode-semantics.md) whenever the library contains an index, barcode, UMI, or other molecular identifier.
+
+## Establish the runtime
+
+1. Require an installed `seqspec >=0.4.0`. Determine the installed package version without assuming `seqspec --version` exists. If unavailable or older, continue only as a draft. Before using tabular-onlist projection, also verify that `seqspec.Region.Onlist.model_fields` contains `sequence_column_index` and `skip_rows`; the development feature may still report version `0.4.0`. If the source requires projection and the capability is absent, continue only as a draft.
+2. Read these rendered official pages during every authoring run:
+   - `https://pachterlab.github.io/seqspec/seqspec-file/`
+   - `https://pachterlab.github.io/seqspec/specification`
+3. Use the installed schema and validator as a second authority. Before declaring a construct inexpressible, inspect both the rendered documentation and executable implementation.
+4. Ask for an output directory. Default to `<cwd>/skill-outputs`. If lifecycle files already exist, warn before overwriting them.
+
+Do not require a devcontainer or uv. Do not use generic search results in place of the rendered official documentation unless those pages fail. Do not direct the user to obsolete seqspec repositories.
+
+## Start source-first
+
+1. Ask first for the internal colloquial library-format name. Record it only as a potentially non-unique alias.
+2. Ask for at least one authoritative source and its verbatim Zotero IEEE citation. Accept a relevant vendor PDF or product webpage. A webpage that merely lists a kit is evidence only for the fields it actually supports.
+3. Open every cited source. Confirm that it is legible and supports the mapped claims. If a page is inaccessible, JavaScript-only, authenticated, or ambiguous, ask for an accessible authoritative PDF or equivalent.
+4. For a supplied local PDF, calculate SHA-256 and record its basename, authoritative URL, access date, and citation. Do not copy the PDF.
+5. Read the representative library-kit source before the detailed interview. Extract a proposed structure, then ask only targeted questions, one at a time.
+
+Do not allow user confirmation to replace missing documentary evidence. If authoritative sources conflict, present the conflict and record the user's selected claim, rejected claim, and rationale.
+
+## Capture identity and kits
+
+Require:
+
+- a stable Seqspec assay ID for the concrete profile;
+- a technical library-format name and any explicitly documented format version;
+- a representative library-preparation kit with product name, manufacturer, catalog number, seqspec value, and sources;
+- a sequencing kit with product name, manufacturer, seqspec value, sources, and catalog number when documented;
+- a live-verified manufacturer URI in the form `https://www.wikidata.org/entity/Q...` for every vendor;
+- an optional internal sequencing-kit alias; accept `none`;
+- optional internal protocol `id` and `version`—never rename version to revision.
+
+Multiple kits may realize one library format. Record additional equivalent kits only when sources support the relationship; do not attempt an exhaustive catalog.
+
+Seqspec requires the native YAML field `assay_id`. In this skill's sidecar and prose, call the same value the **Seqspec assay ID** and store it as `profile.seqspec_assay_id`. This explicit qualifier contains Seqspec's overloaded terminology: never imply that the value identifies a biological assay, and never equate it with a consumer's Demultiplexing Specification ID unless that consumer establishes the mapping.
+
+Use a natural source key: `<first-author-or-responsible-organization>_<year>_<short-title>`. Prefer publication year; otherwise use access year and record `year_basis: accessed`. Preserve the citation text and its bracket number verbatim, even when several entries contain `[1]`.
+
+## Interview the acquisition configuration
+
+Separate documentary facts from user choices:
+
+- Require sources for molecule structure, primer/adaptor facts, fixedness and lengths, kit identity, and kit capability.
+- Let the user choose a supported cycle allocation. Never infer PE150x150 from “300 cycles”; the same kit may support SE300 or asymmetric paired reads.
+- Encode acquired raw reads. PE150x150 and PE50x50 are different profiles when separately acquired. In-silico trimming PE150x150 to PE50x50 is downstream processing and does not create another profile.
+- For fixed Illumina read acquisition, set `min_len == max_len`.
+- Do not validate a kit by naively summing R1, R2, I1, and I2 against advertised cycles.
+- Capture I1/i7 (Index 1) and I2/i5 (Index 2) cycles when known. If unknown, omit index `Read` objects and set `index_read_configuration: unknown` in the sidecar.
+- Exclude SampleSheet contents, concrete FASTQs, actual lane-pool membership, and selected sample-index pairs from the profile artifact. For an already sequenced pool, inspect SampleSheet and demultiplexing reports as run-level evidence under the rules below.
+
+Use `index7` and `index5` only where seqspec requires those enum values. In user-facing prose use i7 (Index 1) and i5 (Index 2). Avoid `index7`, `index5`, and “sub-read” as informal terminology.
+
+## Model regions honestly
+
+- Use `sequence_type: random` only when a sequence is genuinely not known a priori.
+- Use `sequence_type: onlist` for a finite permissible set. Do not relabel it random when the bytes are inaccessible.
+- If fixedness and length are documented but bases are undisclosed, use `sequence_type: fixed` with `N` repeated to the known length and disclose `fixed_sequence_bases: undisclosed` in the sidecar. If fixedness or length is unknown, produce a draft.
+- Treat an i7/i5 onlist as the design-level set from the indexing kit, not the actual lane subset.
+- Record UDI pairing in the sidecar; do not pretend seqspec natively expresses the pairing relationship.
+
+Keep three index sets distinct:
+
+1. **Design set:** every index or allowed UDI pair supported by the documented library/indexing configuration. Encode this set in seqspec and the sidecar.
+2. **Declared pool subset:** the i7/i5 pairs assigned in `SampleSheet.csv` for a concrete run. Use this to corroborate orientation and which design members were selected, but do not shrink the profile onlists to this subset.
+3. **Observed distribution:** index sequences and counts in demultiplexing reports, including abundant sequences absent from the SampleSheet. Use this diagnostically to detect orientation mistakes, SampleSheet omissions, index hopping, contamination, or another pooled library. Do not add an observed sequence to the design set without documentary support.
+
+Do not persist sample names, SampleSheet contents, actual selected pairs, or run report contents in the profile. Summarize a discrepancy only when it affects a profile claim, and record the documentary basis for the resolution.
+
+Search first for authoritative onlist bytes. Never submit an email address or authenticate for the user. Do not accept an uncorroborated public mirror as authoritative. If an authoritative source instead prints a complete finite sequence table, transcribe it into a local onlist; absence of a vendor-published machine file is not a blocker by itself.
+
+For a documentary transcription:
+
+- emit a UTF-8, LF-terminated, one-sequence-per-line file beside the completed seqspec;
+- preserve source order unless the source defines another canonical order;
+- apply reverse complementation or workflow-specific i5 selection only when the source and instrument workflow require it, and record the operation;
+- set the seqspec onlist to that local basename and compute MD5 over the emitted uncompressed bytes;
+- record `availability: documentary_transcription`, SHA-256 digests, the precise page/table/column locator, and every operation in the sidecar;
+- manually compare every emitted sequence against the cited source before completion;
+- for UDI, emit separate i7 and i5 onlists and retain the allowed pair mapping in the sidecar, because seqspec represents the marginal sets but not their pairing constraint.
+
+If neither authoritative bytes nor a complete authoritative table is available, produce a draft.
+
+An authoritative onlist may be a whitespace-delimited table rather than one sequence per line. Preserve its direct vendor URL and exact bytes, and declare the native seqspec projection on the `onlist` object:
+
+- set `sequence_column_index` to the zero-based whitespace-delimited field containing the sequence;
+- set `skip_rows` to the number of physical header rows;
+- leave both at their default `0` for a sequence-only file;
+- keep `md5` over the exact uncompressed source bytes before projection;
+- keep sidecar content and stored-artifact SHA-256 digests over the same pre-projection content and stored bytes, respectively.
+
+Do not create a `cut`, `awk`, or normalized derivative when native projection can express the source. Verify the selected field exists on every retained nonblank row and that projected values satisfy the region length. Projection splits arbitrary whitespace; quoted CSV, embedded delimiters, or other parsing rules remain unsupported and may require an authoritative sequence-only source or a draft.
+
+If the user supplies a vendor software archive or decompressed root:
+
+1. Locate the member without copying it into the output directory.
+2. Record only basenames and internal relative member paths—never the user's absolute path.
+3. Compute seqspec's native MD5 over exact uncompressed bytes.
+4. Compute SHA-256 for exact uncompressed content, stored member bytes when compressed, and the enclosing archive when supplied.
+5. Do not normalize line endings, reorder sequences, or otherwise transform bytes before hashing.
+6. When the member is tabular, record `sequence_column_index` and `skip_rows` on the vanilla seqspec onlist; do not persist a projected copy.
+
+## Emit the pair
+
+Use the templates and constraints in [references/sidecar-format.md](references/sidecar-format.md). Keep `seqspec.yaml` vanilla; put provenance, linked-data mappings, SHA-256 digests, lineage, semantic barcode facets, and validation status in the sidecar.
+
+Require `sources_schema_version: 1.1.0` and `barcode_semantics.vocabulary_version: 1.1.0`. Reject every other sidecar schema or barcode vocabulary version; no backward compatibility is supported.
+
+Keep these version concepts independent:
+
+- seqspec schema version;
+- concrete profile version;
+- technical library-format version;
+- commercial kit version;
+- internal protocol version.
+
+Always model concrete profile lineage. Add component predecessor links only when a source or the user establishes them. `previous_version` records managed history; `variant_of` records technical relatedness. Either or both may apply. Never infer a predecessor solely from similarity, dates, version-looking names, or changed cycles. Do not implement inheritance: every profile is complete.
+
+Write lifecycle-consistent names:
+
+- Complete: `seqspec.yaml`, `provenance.sidecar.yaml`, `seqspec.html`
+- Draft: `seqspec.draft.yaml`, `provenance.draft.sidecar.yaml`, `seqspec.draft.html`
+
+Draft sidecars must enumerate blocking gaps. Draft HTML must visibly state `DRAFT — NOT VALIDATED` and list those gaps.
+
+For a completion attempt, build candidate `seqspec.yaml` and `provenance.sidecar.yaml` in temporary storage, validate them there, and move them into the requested output directory only after success. This prevents an unvalidated candidate from occupying the completed filenames. Revalidation of an existing completed pair may operate in place.
+
+## Check for related canonical examples
+
+Search only `pachterlab/seqspec` under `docs/examples/assays`. Treat examples as advisory, never as authoritative evidence. Always emit the requested local artifact.
+
+Classify relationships:
+
+- `equivalent_seqspec`: same library structure, acquisition configuration, onlist content, and pairing constraints;
+- `same_library_format`: same technical format with a meaningful implementation difference such as an index vocabulary;
+- `related_library_format`: related structure with another platform, primer/orientation, or read length.
+
+## Validate and confirm
+
+Run a preflight composite validation against the temporary candidate:
+
+```bash
+python <this-skill-directory>/scripts/validate.py \
+  --seqspec <candidate>/seqspec.yaml \
+  --sidecar <candidate>/provenance.sidecar.yaml \
+  --onlist-container <archive-or-root-if-needed> \
+  --no-write-attestation
+```
+
+The validator resolves external onlists temporarily, verifies documentary-transcription files in place, validates the sidecar and cross-file links, and invokes vanilla `seqspec check`. It must not persist supplied paths or externally resolved onlist bytes. Revalidation of documentary transcriptions uses the emitted files; revalidation of container-backed onlists requires the matching archive/root again.
+
+Treat errors and missing hard-gate evidence as non-waivable. Surface warnings and block until fixed or explicitly accepted by the user with a rationale stored in `validation.accepted_warnings`.
+
+After preflight validation:
+
+1. Run `seqspec info` and show the result.
+2. Generate `seqspec.html` using `seqspec print -f seqspec-html -o seqspec.html seqspec.yaml`.
+3. Present the graphical summary and request explicit confirmation.
+4. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
+5. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
+6. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into the requested output directory.
+7. Report completion only after both automated validation and user confirmation.
+
+If any gate remains unresolved, retain draft filenames and state the precise blocker.
