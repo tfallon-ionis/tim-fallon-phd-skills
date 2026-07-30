@@ -117,6 +117,13 @@ If the user supplies a vendor software archive or decompressed root:
 
 Use the templates and constraints in [references/sidecar-format.md](references/sidecar-format.md). Keep `seqspec.yaml` vanilla; put provenance, linked-data mappings, SHA-256 digests, lineage, semantic barcode facets, and validation status in the sidecar.
 
+Recognize two materialization forms:
+
+1. **Source-linked authoring form:** preserve authoritative public onlist URLs in `seqspec.yaml`; keep documentary-transcription onlists as local files beside it. This is the canonical output of this skill and the form accepted by the composite authoring validator.
+2. **Offline-packaged form:** onlist URLs downloaded as text files for offline packaging, with every onlist copied as exact bytes into the package and its Seqspec URL rewritten to a package-relative local path.
+
+Treat the offline-packaged form as a derived distribution of the source-linked form, not as a new profile or profile version, when library structure, read structure, onlist bytes and projections, and pairing constraints are unchanged. Expect the two `seqspec.yaml` files to have different SHA-256 content digests because their onlist locations differ. Preserve the original onlist provenance and content digests, compute a digest for the packaged `seqspec.yaml`, and cover every packaged payload with the consumer bundle's integrity manifest. Validate the source-linked form before packaging; verify the packaged form with its offline bundle verifier and a no-network check.
+
 Require `sources_schema_version: 1.1.0` and `barcode_semantics.vocabulary_version: 1.1.0`. Reject every other sidecar schema or barcode vocabulary version; no backward compatibility is supported.
 
 Keep these version concepts independent:

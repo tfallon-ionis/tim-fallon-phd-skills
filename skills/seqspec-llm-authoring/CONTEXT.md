@@ -38,6 +38,14 @@ A synthetic sequence used to partition reads. Facets state where it is observed 
 
 A finite set of permissible sequences for a region. Its authoritative source bytes may be a whitespace-delimited table projected natively with a zero-based sequence column and skipped physical header rows. Digests describe the source before projection. An unavailable onlist remains finite and must not be represented as random.
 
+### source-linked seqspec
+
+The canonical authoring materialization of a seqspec profile. Authoritative public onlists retain their source URLs, while documentary transcriptions remain local artifacts beside the seqspec.
+
+### offline-packaged seqspec
+
+A derived materialization with onlist URLs downloaded as text files for offline packaging and rewritten to package-relative local paths. It represents the same profile when the onlist bytes, projections, library structure, read structure, and pairing constraints are unchanged, even though its `seqspec.yaml` content digest differs.
+
 ## Version relationships
 
 - `previous_version`: an explicitly established successor/predecessor relationship between managed artifacts.
@@ -53,3 +61,4 @@ A finite set of permissible sequences for a region. Its authoritative source byt
 5. A completed profile passes both vanilla seqspec validation and sidecar/cross-file validation.
 6. Exact equivalence includes onlist contents and pairing constraints.
 7. A consumer may assign its own identifier to an application of a profile; that identifier is not automatically the Seqspec assay ID.
+8. Changing only between source-linked and offline-packaged materializations does not create a new profile version.

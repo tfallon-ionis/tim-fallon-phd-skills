@@ -153,6 +153,15 @@ artifacts:
 
 ## Onlists
 
+### Materialization forms
+
+A profile may have two Seqspec materializations:
+
+1. **Source-linked authoring form:** authoritative public onlists retain their direct source URLs; documentary transcriptions remain local files beside `seqspec.yaml`. `scripts/validate.py` validates this form together with `provenance.sidecar.yaml`.
+2. **Offline-packaged form:** onlist URLs downloaded as text files for offline packaging. Store exact source bytes inside the package, rewrite only the Seqspec onlist `url` and `urltype` needed to resolve the local files, and leave projection metadata and native MD5 values unchanged.
+
+The sidecar's `availability`, source links, and content digests describe origin and exact content, so do not relabel an `authoritative_public` onlist merely because a consumer has vendored it. If packaging changes only onlist locations, the two Seqspec files have different byte-level digests but represent the same profile. Record the packaged Seqspec digest and all payload digests in the consumer bundle manifest. The composite authoring validator governs the source-linked form; the consumer's offline bundle verifier governs the packaged form.
+
 Keep tabular projection metadata in vanilla seqspec, not duplicated in this sidecar. For example, a vendor plate map with a header and sequences in its second whitespace-delimited field uses:
 
 ```yaml
