@@ -10,17 +10,20 @@ Produce one Illumina library-format plus raw-acquisition profile per invocation.
 Seqspec describes genomics data through the sequencing-library molecule, the reads generated from it, and optional file associations. This skill deliberately emits a reusable, file-agnostic profile. The profile can annotate post-demultiplexing FASTQ data or supply structure to preprocessing and demultiplexing systems; do not call it a demultiplexing specification unless a consuming bounded context explicitly defines that application.
 
 Read [references/sidecar-format.md](references/sidecar-format.md) before emitting files. Read [references/barcode-semantics.md](references/barcode-semantics.md) whenever the library contains an index, barcode, UMI, or other molecular identifier.
+Read [references/illumina-run-metadata.md](references/illumina-run-metadata.md) when using `RunInfo.xml` or `RunParameters.xml` as run-level evidence.
 
 ## Establish the runtime
 
-1. Require an installed `seqspec >=0.4.0`. Determine the installed package version without assuming `seqspec --version` exists. If unavailable or older, continue only as a draft. Before using tabular-onlist projection, also verify that `seqspec.Region.Onlist.model_fields` contains `sequence_column_index` and `skip_rows`; the development feature may still report version `0.4.0`. If the source requires projection and the capability is absent, continue only as a draft.
+1. Require the seqspec implementation from `https://github.com/tfallon-ionis/seqspec.git` at commit `5fb682b52c7ba9ad09e7796ca97a449726076530` (`feat: support tabular onlist projection`), or a deliberately tested successor. The fork and the materially different PyPI release both report `0.4.0`, so a version check alone is insufficient. Determine the installed package version without assuming `seqspec --version` exists, and verify that `seqspec.Region.Onlist.model_fields` contains `sequence_column_index` and `skip_rows`. If the implementation is unavailable, older than `0.4.0`, or lacks either capability, continue only as a draft.
 2. Read these rendered official pages during every authoring run:
    - `https://pachterlab.github.io/seqspec/seqspec-file/`
    - `https://pachterlab.github.io/seqspec/specification`
 3. Use the installed schema and validator as a second authority. Before declaring a construct inexpressible, inspect both the rendered documentation and executable implementation.
-4. Ask for an output directory. Default to `<cwd>/skill-outputs`. If lifecycle files already exist, warn before overwriting them.
+4. Ask for an output root. Default to `<cwd>/skill-outputs`. Once the Seqspec assay ID is established, use `<output-root>/<seqspec-assay-id>/` as the profile output directory. The directory name must exactly equal the native `seqspec.yaml` `assay_id`; do not substitute the colloquial library-format name or another slug. If lifecycle files already exist there, warn before overwriting them.
 
 Do not require a devcontainer or uv. Do not use generic search results in place of the rendered official documentation unless those pages fail. Do not direct the user to obsolete seqspec repositories.
+
+For development and regression testing, run `scripts/test.sh`. It installs the supported fork commit into an isolated uv environment before invoking the suite; do not substitute unpinned `--with seqspec`.
 
 ## Start source-first
 
@@ -36,7 +39,7 @@ Do not allow user confirmation to replace missing documentary evidence. If autho
 
 Require:
 
-- a stable Seqspec assay ID for the concrete profile;
+- a stable, path-safe Seqspec assay ID for the concrete profile; it must be one directory-name component, not `.`, `..`, or a value containing `/` or `\`;
 - a technical library-format name and any explicitly documented format version;
 - a representative library-preparation kit with product name, manufacturer, catalog number, seqspec value, and sources;
 - a sequencing kit with product name, manufacturer, seqspec value, sources, and catalog number when documented;
@@ -106,7 +109,7 @@ Do not create a `cut`, `awk`, or normalized derivative when native projection ca
 
 If the user supplies a vendor software archive or decompressed root:
 
-1. Locate the member without copying it into the output directory.
+1. Locate the member without copying it into the profile output directory.
 2. Record only basenames and internal relative member paths—never the user's absolute path.
 3. Compute seqspec's native MD5 over exact uncompressed bytes.
 4. Compute SHA-256 for exact uncompressed content, stored member bytes when compressed, and the enclosing archive when supplied.
@@ -141,9 +144,21 @@ Write lifecycle-consistent names:
 - Complete: `seqspec.yaml`, `provenance.sidecar.yaml`, `seqspec.html`
 - Draft: `seqspec.draft.yaml`, `provenance.draft.sidecar.yaml`, `seqspec.draft.html`
 
+Place these files and any local onlists together in `<output-root>/<seqspec-assay-id>/`. For example:
+
+```text
+skill-outputs/
+└── mercurius-full-length-brb-seq-illumina-r1-28-i1-8-i2-8-r2-90-v1/
+    ├── seqspec.yaml
+    ├── provenance.sidecar.yaml
+    ├── seqspec.html
+    ├── mf-udi-i7.txt
+    └── mf-udi-i5.txt
+```
+
 Draft sidecars must enumerate blocking gaps. Draft HTML must visibly state `DRAFT — NOT VALIDATED` and list those gaps.
 
-For a completion attempt, build candidate `seqspec.yaml` and `provenance.sidecar.yaml` in temporary storage, validate them there, and move them into the requested output directory only after success. This prevents an unvalidated candidate from occupying the completed filenames. Revalidation of an existing completed pair may operate in place.
+For a completion attempt, build candidate `seqspec.yaml` and `provenance.sidecar.yaml` in temporary storage, validate them there, and move them into the profile output directory only after success. This prevents an unvalidated candidate from occupying the completed filenames. Revalidation of an existing completed pair may operate in place.
 
 ## Check for related canonical examples
 
@@ -178,7 +193,7 @@ After preflight validation:
 3. Present the graphical summary and request explicit confirmation.
 4. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
 5. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
-6. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into the requested output directory.
+6. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into `<output-root>/<seqspec-assay-id>/`.
 7. Report completion only after both automated validation and user confirmation.
 
 If any gate remains unresolved, retain draft filenames and state the precise blocker.

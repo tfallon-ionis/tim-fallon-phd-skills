@@ -68,9 +68,20 @@ def installed_seqspec_version() -> str:
     try:
         value = importlib.metadata.version("seqspec")
     except importlib.metadata.PackageNotFoundError as exc:
-        raise ValidationFailure("seqspec is not installed; require seqspec >=0.4.0") from exc
+        raise ValidationFailure("the supported seqspec implementation is not installed") from exc
     if version_tuple(value) < MIN_SEQSPEC_VERSION:
         raise ValidationFailure(f"seqspec {value} is too old; require >=0.4.0")
+    try:
+        from seqspec.Region import Onlist
+    except ImportError as exc:
+        raise ValidationFailure("installed seqspec lacks the Onlist model") from exc
+    required_fields = {"sequence_column_index", "skip_rows"}
+    missing_fields = sorted(required_fields - set(Onlist.model_fields))
+    if missing_fields:
+        raise ValidationFailure(
+            "installed seqspec is not the supported projection-capable implementation; "
+            f"missing Onlist fields: {', '.join(missing_fields)}"
+        )
     return value
 
 

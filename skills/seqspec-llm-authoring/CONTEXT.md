@@ -10,6 +10,10 @@ One complete library structure plus one designed raw-acquisition/read configurat
 
 The identifier stored in Seqspec's required `assay_id` field and mirrored as `seqspec_assay_id` in this skill's provenance model. The name belongs to the external Seqspec format; it does not imply a biological-assay identity or equal a consumer's Demultiplexing Specification ID.
 
+### profile output directory
+
+The directory containing one profile's Seqspec, provenance sidecar, visualization, and local onlists. It is named exactly for the Seqspec assay ID and lives directly under the selected output root: `<output-root>/<seqspec-assay-id>/`.
+
 ### demultiplexing application
 
 Consumer-specific use of a seqspec profile to derive rules for partitioning pooled sequencing reads. It is one possible application of the profile, not the profile's universal identity or boundary.
@@ -62,3 +66,4 @@ A derived materialization with onlist URLs downloaded as text files for offline 
 6. Exact equivalence includes onlist contents and pairing constraints.
 7. A consumer may assign its own identifier to an application of a profile; that identifier is not automatically the Seqspec assay ID.
 8. Changing only between source-linked and offline-packaged materializations does not create a new profile version.
+9. One profile output directory is named exactly for its Seqspec assay ID.

@@ -3,7 +3,7 @@
 **Owner:** Tim Fallon
 **Status:** approved for implementation
 **Decision date:** 2026-07-15
-**Minimum seqspec CLI:** `>=0.4.0`
+**Supported seqspec implementation:** `tfallon-ionis/seqspec@5fb682b52c7ba9ad09e7796ca97a449726076530`
 
 ## Purpose and boundary
 
@@ -17,13 +17,14 @@ V1 is Illumina-only. Non-Illumina design work is deferred outside the runtime sk
 
 - The canonical home is `skills/seqspec-llm-authoring/` in this repository.
 - Do not add a devcontainer, uv project, or bundled distillation of seqspec documentation.
-- Require an installed `seqspec >=0.4.0`. If it is unavailable or older, permit a draft but never report completion.
+- Require the `tfallon-ionis/seqspec` implementation at commit `5fb682b52c7ba9ad09e7796ca97a449726076530`, or a deliberately tested successor, and require its `sequence_column_index` and `skip_rows` onlist capabilities. The fork and PyPI release both report `0.4.0`; package version alone cannot establish compatibility. If the supported implementation or capabilities are unavailable, permit a draft but never report completion.
 - At every authoring run, read the rendered official File Format and Technical Specification pages. Use the installed schema/validator as the fallback and as a second check before declaring a feature inexpressible.
-- Do not direct the runtime agent to obsolete or alternate seqspec repositories.
+- Do not direct the runtime agent to the obsolete `IGVF/seqspec` repository or to an unqualified alternate implementation. The pinned `tfallon-ionis/seqspec` capability commit above is the supported exception.
+- Run regression tests through `scripts/test.sh`, which pins the fork by full commit SHA. Do not test this skill with an unqualified PyPI `seqspec`.
 
 ## Interview and evidence workflow
 
-1. Ask for an output directory; default to `<cwd>/skill-outputs`. Warn before overwriting existing artifacts.
+1. Ask for an output root; default to `<cwd>/skill-outputs`. After establishing the Seqspec assay ID, use `<output-root>/<seqspec-assay-id>/` as the profile output directory and warn before overwriting existing artifacts there. The directory name exactly matches native `seqspec.yaml: assay_id`, not the colloquial library-format name or another slug.
 2. Ask first for the internal colloquial library-format name. Treat it only as a non-unique alias.
 3. Require at least one authoritative source and its verbatim Zotero IEEE entry. A relevant vendor PDF or product webpage can qualify.
 4. Read the representative library-kit source before asking detailed structural questions. Extract proposals, then interview one question at a time.
@@ -39,7 +40,7 @@ Supplied PDFs are not copied. Record their basename, SHA-256, authoritative URL,
 ## seqspec semantics
 
 - `seqspec_version` is the installed CLI's supported schema version, never a kit, SOP, or profile version.
-- Native Seqspec `assay_id` identifies the concrete profile and is based on the technical library-format name/version plus acquisition configuration, with an explicit disambiguator when necessary. Mirror it as `profile.seqspec_assay_id` in the sidecar and call it the Seqspec assay ID in prose. This external-format term does not imply a biological assay or a consumer's Demultiplexing Specification ID. Never derive uniqueness from the colloquial alias.
+- Native Seqspec `assay_id` identifies the concrete profile and is based on the technical library-format name/version plus acquisition configuration, with an explicit disambiguator when necessary. Require it to be a safe single directory-name component: not `.`, `..`, and containing neither `/` nor `\`. Mirror it as `profile.seqspec_assay_id` in the sidecar and call it the Seqspec assay ID in prose. This external-format term does not imply a biological assay or a consumer's Demultiplexing Specification ID. Never derive uniqueness from the colloquial alias.
 - Encode raw acquisition. PE150x150 and PE50x50 are different profiles when those were the acquired reads. In-silico trimming PE150x150 FASTQs to PE50x50 is downstream processing and does not create another seqspec.
 - For fixed Illumina acquisition, set read `min_len == max_len`.
 - A sequencing kit's advertised cycle capacity does not determine the allocation among R1, R2, I1, and I2. Do not use a naive sum-of-cycles compatibility rule.
@@ -101,7 +102,7 @@ Use linked-data mappings where useful: `dcterms:isVersionOf`, `pav:version`, and
 
 The authoritative entry point is `scripts/validate.py`, which:
 
-1. Requires `seqspec >=0.4.0`.
+1. Requires `seqspec >=0.4.0` with the pinned fork's `sequence_column_index` and `skip_rows` onlist capabilities.
 2. Validates the sidecar against schema version 1.1.0.
 3. Resolves supplied onlist archives/roots into temporary storage.
 4. Verifies content, stored-artifact, and container digests.
@@ -126,9 +127,11 @@ Use lifecycle-consistent filenames:
 | Complete | `seqspec.yaml` | `provenance.sidecar.yaml` | `seqspec.html` |
 | Draft | `seqspec.draft.yaml` | `provenance.draft.sidecar.yaml` | `seqspec.draft.html` |
 
+Place the lifecycle files and local onlists together under `<output-root>/<seqspec-assay-id>/`. This permits multiple independently named profiles beneath the default `<cwd>/skill-outputs` root without conflating their artifacts.
+
 Draft HTML must carry a conspicuous `DRAFT — NOT VALIDATED` banner and list blocking gaps. Promotion to the complete names occurs only after the composite gate passes.
 
-Build a completion candidate under the completed basenames in temporary storage, run the composite gate there, and move the pair into the requested output directory only after success. This preserves vanilla relative-path behavior during validation without exposing an unvalidated `seqspec.yaml` in the output directory.
+Build a completion candidate under the completed basenames in temporary storage, run the composite gate there, and move the pair into the profile output directory only after success. This preserves vanilla relative-path behavior during validation without exposing an unvalidated `seqspec.yaml` in the output directory.
 
 ## Duplicate and relationship checks
 

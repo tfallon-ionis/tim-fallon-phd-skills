@@ -142,6 +142,8 @@ Artifacts are files rather than bibliography entries. Link each artifact to at l
 
 `profile.seqspec_assay_id` must equal the native Seqspec `assay_id`. The qualified sidecar name makes the external origin of “assay” explicit; it is not a claim that the identifier names a biological assay or a consumer's Demultiplexing Specification.
 
+Store the completed or draft artifact set in `<output-root>/<seqspec-assay-id>/`, where the final path component exactly equals both identifiers above. Keep the Seqspec, provenance sidecar, visualization, and any local onlists together so relative onlist paths remain valid.
+
 ```yaml
 artifacts:
   - artifact_id: full_length_brb_guide_pdf
