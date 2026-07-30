@@ -1,0 +1,364 @@
+sources_schema_version: 1.1.0
+status: complete
+profile:
+  seqspec_assay_id: mercurius-full-length-brb-seq-illumina-nextseq-2000-p3-r1-28-i1-8-i2-8-r2-90-v1
+  internal_colloquial_names:
+  - HT RNAseq v1
+  family_id: mercurius-full-length-brb-seq
+  version: 1.0.0
+  previous_version: null
+  variant_of: mercurius-full-length-brb-seq
+  relations:
+  - type: same_library_format
+    target: mercurius-full-length-brb-seq-illumina-r1-28-i1-8-i2-8-r2-90-v1
+    rationale: Same library structure, read allocation, onlists, and barcode semantics;
+      distinct P3 sequencing-kit configuration.
+  linked_data:
+    is_version_of: http://purl.org/dc/terms/isVersionOf
+    version: http://purl.org/pav/version
+    previous_version: http://purl.org/pav/previousVersion
+library_format:
+  technical_name: Mercurius Full-Length BRB-seq
+  version: null
+  family_id: mercurius-full-length-brb-seq
+  previous_version: null
+  representative_kit:
+    seqspec_value: Mercurius Full-Length BRB-seq Library Preparation 4x96 kit (PN
+      11601)
+    product_name: Mercurius Full-Length BRB-seq Library Preparation 4x96 kit
+    manufacturer_id: alithea_genomics
+    catalog_number: '11601'
+    version: null
+    source_ids:
+    - alithea_genomics_2026_full_length_brb_seq_user_guide
+sequencing:
+  platform: NextSeq 2000
+  index_read_configuration: known
+  reads:
+  - read_id: R1
+    cycles: 28
+    basis: user_supplied
+    source_ids: []
+  - read_id: I1
+    cycles: 8
+    basis: user_supplied
+    source_ids: []
+  - read_id: I2
+    cycles: 8
+    basis: user_supplied
+    source_ids: []
+  - read_id: R2
+    cycles: 90
+    basis: user_supplied
+    source_ids: []
+  sequence_kit:
+    seqspec_value: NextSeq 2000 P3 XLEAP-SBS Reagent Kit (100 Cycles)
+    product_name: NextSeq 2000 P3 XLEAP-SBS Reagent Kit (100 Cycles)
+    manufacturer_id: illumina
+    catalog_number: '20100990'
+    catalog_number_status: documented
+    version: null
+    source_ids:
+    - illumina_2026_nextseq_1000_2000_reagents
+internal_protocol:
+  id: HT RNAseq
+  version: v1
+  previous_version: null
+  source_ids: []
+vendors:
+- vendor_id: alithea_genomics
+  name: Alithea Genomics
+  wikidata_uri: https://www.wikidata.org/entity/Q140568183
+  verified_at: '2026-07-15'
+- vendor_id: illumina
+  name: Illumina
+  wikidata_uri: https://www.wikidata.org/entity/Q2068984
+  verified_at: '2026-07-15'
+sources:
+- source_id: alithea_genomics_2026_full_length_brb_seq_user_guide
+  authority: authoritative
+  title: Full-Length BRB-seq Library Preparation Kit for 96 and 384 Samples User Guide
+  url: https://alitheagenomics.com/hubfs/Full-Length-BRB-seq-kit-User-Guide-2.pdf
+  accessed: '2026-07-15'
+  year_basis: published
+  zotero_ieee: '[1] Alithea Genomics, “Full-Length-BRB-seq-kit-User-Guide-2.” Alithea
+    Genomics. Accessed: Jan. 14, 2026. [Online]. Available: https://alitheagenomics.com/hubfs/Full-Length-BRB-seq-kit-User-Guide-2.pdf'
+- source_id: illumina_2026_nextseq_1000_2000_reagents
+  authority: authoritative
+  title: NextSeq 1000/2000 Reagents | Multiple flow cell configurations
+  url: https://www.illumina.com/products/by-type/sequencing-kits/cluster-gen-sequencing-reagents/nextseq-1000-2000-reagents.html
+  accessed: '2026-07-15'
+  year_basis: accessed
+  zotero_ieee: '[1] Illumina, “2000 Reagents | Multiple flow cell configurations.”
+    Accessed: Jul. 15, 2026. [Online]. Available: https://www.illumina.com/products/by-type/sequencing-kits/cluster-gen-sequencing-reagents/nextseq-1000-2000-reagents.html'
+- source_id: illumina_2026_truseq_dna_rna_cd_indexes
+  authority: authoritative
+  title: TruSeq DNA and RNA CD Indexes
+  url: https://support-docs.illumina.com/SHARE/AdapterSequences/Content/CDIndexes.htm
+  accessed: '2026-07-15'
+  year_basis: accessed
+  zotero_ieee: '[1] Illumina, “TruSeq DNA and RNA CD Indexes.” Accessed: Jul. 15,
+    2026. [Online]. Available: https://support-docs.illumina.com/SHARE/AdapterSequences/Content/CDIndexes.htm'
+artifacts:
+- artifact_id: full_length_brb_seq_user_guide_pdf
+  filename: Alithea Genomics - Full-Length-BRB-seq-kit-User-Guide-2.pdf
+  media_type: application/pdf
+  sha256: b913a448af64127125b2fbc60cdc067ac6800397fe3753384fc2c9fc92a2e539
+  authoritative_url: https://alitheagenomics.com/hubfs/Full-Length-BRB-seq-kit-User-Guide-2.pdf
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+onlists:
+- file_id: barcodes_v5C_96_brb.txt
+  filename: barcodes_v5C_96_brb.txt
+  availability: authoritative_public
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  content_digest:
+    algorithm: sha256
+    value: 27036b34a5eec4bea0abe5c27cb61259cb8ad6ee0bca2f11bcc890eea79ea7c5
+  stored_artifact_digest:
+    algorithm: sha256
+    value: 27036b34a5eec4bea0abe5c27cb61259cb8ad6ee0bca2f11bcc890eea79ea7c5
+- file_id: mf-udi-i7.txt
+  filename: mf-udi-i7.txt
+  availability: documentary_transcription
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  content_digest:
+    algorithm: sha256
+    value: 04cc68d2518053a78dbee182790c32cf7e8b04435c6c91f47b397efd29e8ab77
+  stored_artifact_digest:
+    algorithm: sha256
+    value: 04cc68d2518053a78dbee182790c32cf7e8b04435c6c91f47b397efd29e8ab77
+  derivation:
+    kind: documentary_transcription
+    source_locator: Page 16, Table 2, i7 index sequence column
+    operations:
+    - Transcribe MF.UDI.1 through MF.UDI.4 in source row order.
+    - Write one uppercase sequence per line using LF and a terminal newline.
+    verification: manually_compared_to_source
+- file_id: mf-udi-i5.txt
+  filename: mf-udi-i5.txt
+  availability: documentary_transcription
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  content_digest:
+    algorithm: sha256
+    value: 739f6d6d98f3de8fd6d7a244939c9055bf3838ebc3bd731dad7937bc12132d44
+  stored_artifact_digest:
+    algorithm: sha256
+    value: 739f6d6d98f3de8fd6d7a244939c9055bf3838ebc3bd731dad7937bc12132d44
+  derivation:
+    kind: documentary_transcription
+    source_locator: Page 16, Table 2, Forward Workflow i5 index sequence column
+    operations:
+    - Transcribe MF.UDI.1 through MF.UDI.4 in source row order.
+    - Retain the forward-workflow values as the 5-prime-to-3-prime seqspec-region
+      basis; the negative-strand I2 read supplies the NextSeq reverse-workflow projection.
+    - Write one uppercase sequence per line using LF and a terminal newline.
+    verification: manually_compared_to_source
+claims:
+- claim_id: library_technical_name
+  target: library_format.technical_name
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: library_kit_product
+  target: library_format.representative_kit.product_name
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: library_kit_manufacturer
+  target: library_format.representative_kit.manufacturer_id
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: library_kit_catalog
+  target: library_format.representative_kit.catalog_number
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: sample_barcode_length
+  target: library_spec.sample_barcode.min_len
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: sample_barcode_onlist
+  target: library_spec.sample_barcode.sequence_type
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: umi_length
+  target: library_spec.umi.min_len
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: umi_random
+  target: library_spec.umi.sequence_type
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: oligo_dt_sequence
+  target: library_spec.oligo_dt.sequence
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  note: Figure 1 places the oligo-dT segment after Barcode+UMI and before cDNA in
+    the P5-to-P7 library strand.
+- claim_id: oligo_dt_min_length
+  target: library_spec.oligo_dt.min_len
+  basis: user_supplied
+  source_ids: []
+  note: The user selected 22-42 nt as a ballpark range; the vendor manual documents
+    the homopolymer's location but does not state these range bounds.
+- claim_id: oligo_dt_max_length
+  target: library_spec.oligo_dt.max_len
+  basis: user_supplied
+  source_ids: []
+  note: The user selected 22-42 nt as a ballpark range; the vendor manual documents
+    the homopolymer's location but does not state these range bounds.
+- claim_id: oligo_dt_region_type
+  target: library_spec.oligo_dt.region_type
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: cdna_target_min_length
+  target: library_spec.cdna.min_len
+  basis: user_supplied
+  source_ids: []
+  note: The user specified a targeted cDNA insert range of 160-200 nt, excluding the
+    homopolymer.
+- claim_id: cdna_target_max_length
+  target: library_spec.cdna.max_len
+  basis: user_supplied
+  source_ids: []
+  note: The user specified a targeted cDNA insert range of 160-200 nt, excluding the
+    homopolymer.
+- claim_id: udi_pairing
+  target: barcode_semantics.index_schemes.mf_udi
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+- claim_id: read1_primer_site_sequence
+  target: library_spec.read1_primer_boundary.sequence
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  - illumina_2026_truseq_dna_rna_cd_indexes
+  note: The kit guide identifies the standard Illumina Read 1 site; the Illumina i5
+    adapter scaffold prints the complete site immediately after [i5]. The adapter-trimming
+    rows are not used for this derivation.
+- claim_id: read1_primer_site_length
+  target: library_spec.read1_primer_boundary.min_len
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  - illumina_2026_truseq_dna_rna_cd_indexes
+- claim_id: read2_primer_site_sequence
+  target: library_spec.read2_primer_boundary.sequence
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  - illumina_2026_truseq_dna_rna_cd_indexes
+  note: In 5-prime-to-3-prime library-molecule orientation, concatenate the documented
+    A-tailing base with the i7 adapter prefix through the base immediately before
+    [i7]. The adapter-trimming rows are not used for this derivation.
+- claim_id: read2_primer_site_length
+  target: library_spec.read2_primer_boundary.min_len
+  basis: documentary
+  source_ids:
+  - alithea_genomics_2026_full_length_brb_seq_user_guide
+  - illumina_2026_truseq_dna_rna_cd_indexes
+- claim_id: sequence_kit_product
+  target: sequencing.sequence_kit.product_name
+  basis: documentary
+  source_ids:
+  - illumina_2026_nextseq_1000_2000_reagents
+- claim_id: sequence_kit_manufacturer
+  target: sequencing.sequence_kit.manufacturer_id
+  basis: documentary
+  source_ids:
+  - illumina_2026_nextseq_1000_2000_reagents
+- claim_id: sequence_kit_catalog
+  target: sequencing.sequence_kit.catalog_number
+  basis: documentary
+  source_ids:
+  - illumina_2026_nextseq_1000_2000_reagents
+- claim_id: sequencing_platform
+  target: sequencing.platform
+  basis: documentary
+  source_ids:
+  - illumina_2026_nextseq_1000_2000_reagents
+- claim_id: r1_cycles
+  target: sequencing.reads.R1.cycles
+  basis: user_supplied
+  source_ids: []
+- claim_id: i1_cycles
+  target: sequencing.reads.I1.cycles
+  basis: user_supplied
+  source_ids: []
+- claim_id: i2_cycles
+  target: sequencing.reads.I2.cycles
+  basis: user_supplied
+  source_ids: []
+- claim_id: r2_cycles
+  target: sequencing.reads.R2.cycles
+  basis: user_supplied
+  source_ids: []
+barcode_semantics:
+  vocabulary_version: 1.1.0
+  regions:
+  - region_id: sample_barcode
+    semantic_type: demultiplexing_barcode
+    observed_in: R1
+    groups_reads_by: library_preparation_input
+  - region_id: umi
+    semantic_type: molecular_identifier
+    observed_in: R1
+    groups_reads_by: source_molecule
+    external_mappings:
+    - vocabulary: SAM
+      term: RX/OX/MI
+  - region_id: i7
+    semantic_type: demultiplexing_barcode
+    observed_in: I1
+    index_role: i7
+    alternate_name: Index 1
+    groups_reads_by: flowcell_lane_pool_member
+  - region_id: i5
+    semantic_type: demultiplexing_barcode
+    observed_in: I2
+    index_role: i5
+    alternate_name: Index 2
+    groups_reads_by: flowcell_lane_pool_member
+  index_schemes:
+  - scheme_id: mf_udi
+    type: unique_dual_index
+    members:
+    - i7
+    - i5
+    pair_sequence_basis: seqspec_region
+    allowed_pairs:
+    - pair_id: MF.UDI.1
+      i7: GCTTGTCA
+      i5: AGGCGAAG
+    - pair_id: MF.UDI.2
+      i7: CAAGCTAG
+      i5: TAATCTTA
+    - pair_id: MF.UDI.3
+      i7: AGTTCAGG
+      i5: CAGGACGT
+    - pair_id: MF.UDI.4
+      i7: GACCTGAA
+      i5: GTACTGAC
+conflicts: []
+validation:
+  status: complete
+  validated_at: '2026-07-30T21:35:00.249982Z'
+  seqspec_cli_version: 0.4.0
+  sidecar_schema_version: 1.1.0
+  accepted_warnings: []
+  blocking_gaps: []
+  user_confirmation:
+    status: confirmed
+    confirmed_at: '2026-07-30T21:34:32Z'

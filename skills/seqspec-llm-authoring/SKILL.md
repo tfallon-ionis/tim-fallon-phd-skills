@@ -58,9 +58,10 @@ Treat every completed parent profile as immutable. Changing its instrument, sequ
 5. Reuse unchanged validated library structure, claims, barcode semantics, onlist projections, and onlist bytes. Copy local onlists byte-for-byte and verify their digests; retain authoritative public URLs.
 6. Replace superseded evidence instead of accumulating it. Remove sources and claims that support only the old acquisition; add authoritative sources and claims for the child.
 7. Re-evaluate instrument-dependent facts, including i5 orientation and platform-specific cycle accounting. Do not transfer a cycle-capacity rule between instrument families.
-8. Give the child a distinct, descriptive Seqspec assay ID. Include the differentiating acquisition characteristic when otherwise identical siblings would collide.
-9. For an acquisition sibling, retain the common family under `variant_of`, leave `previous_version` unset unless succession is explicitly established, and add a `same_library_format` relation targeting the concrete parent.
-10. Keep the child complete and standalone. Current relations express relatedness, not inheritance.
+8. Treat demultiplexer extraction coordinates as run-time software configuration, not molecular-design truth. Before changing an in-read barcode/UMI boundary, corroborate the proposed geometry against authoritative design evidence such as the library protocol and design-onlist lengths. Raw-read structure and demultiplexing output may corroborate or contradict the proposal, but cannot create a design claim. If the evidence conflicts, report the discrepancy and do not encode the configured split as a library-format change.
+9. Give the child a distinct, descriptive Seqspec assay ID. Include the differentiating acquisition characteristic when otherwise identical siblings would collide.
+10. For an acquisition sibling, retain the common family under `variant_of`, leave `previous_version` unset unless succession is explicitly established, and add a `same_library_format` relation targeting the concrete parent.
+11. Keep the child complete and standalone. Current relations express relatedness, not inheritance.
 
 Compare parsed YAML and payload digests with the tested helper. Allow only paths approved in the semantic plan:
 

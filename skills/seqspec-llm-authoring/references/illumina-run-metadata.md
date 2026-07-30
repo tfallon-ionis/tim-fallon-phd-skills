@@ -29,7 +29,16 @@ Map the ordered elements to R1, I1, I2, and R2 as applicable. Encode their acqui
 
 An i5 read may report `IsReverseComplement="Y"` on patterned-flow-cell instruments. Account for that orientation when comparing SampleSheet values with a documented design onlist.
 
-`RunInfo.xml` gives physical read boundaries only. Derive an in-read barcode/UMI split from the library-preparation guide or explicit on-board-demultiplexing settings, never from cycle counts alone.
+`RunInfo.xml` gives physical read boundaries only. Derive an in-read barcode/UMI split from authoritative library-design evidence, never from cycle counts alone. Treat explicit on-board-demultiplexing coordinates as the software's configured extraction window, not proof of the molecule's internal boundary.
+
+Before using configured extraction coordinates to modify a profile:
+
+1. compare each window length with the authoritative design-onlist length;
+2. compare the proposed split with the library protocol or primer design;
+3. use representative raw-read structure and demultiplexing output only as corroborating or contradictory run-level evidence; and
+4. stop the geometry change when the configured window conflicts with the design evidence.
+
+Do not pad a shorter onlist, infer missing bases, or promote observed sequences into the design set to make a configured window fit.
 
 ## Interpret `RunParameters.xml`
 
@@ -77,7 +86,7 @@ Do not extrapolate catalog numbers from neighboring SKUs.
 
 - Derive R1/I1/I2/R2 order, lengths, and orientation from `RunInfo.xml`.
 - Use `RunParameters.xml` to corroborate the public instrument, flow-cell class, chemistry, and sequencing-kit identity.
-- Use the SampleSheet only for declared index selections and explicit on-board settings.
+- Use the SampleSheet only for declared index selections and explicit on-board settings; do not treat configured extraction windows as molecular-design truth.
 - Use a library-kit source to establish molecular structure and any in-read barcode/UMI geometry.
 - Do not shrink design onlists to the SampleSheet subset.
 - Do not persist run-local identities or internal storage locations in the reusable seqspec profile or provenance sidecar.
