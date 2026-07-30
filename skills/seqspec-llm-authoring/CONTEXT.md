@@ -67,3 +67,6 @@ A derived materialization with onlist URLs downloaded as text files for offline 
 7. A consumer may assign its own identifier to an application of a profile; that identifier is not automatically the Seqspec assay ID.
 8. Changing only between source-linked and offline-packaged materializations does not create a new profile version.
 9. One profile output directory is named exactly for its Seqspec assay ID.
+10. A completed profile is immutable when used as a derivation parent; a changed acquisition is emitted as a complete sibling.
+11. `variant_of` and `same_library_format` express relatedness, never inheritance or overlay composition.
+12. The sidecar `sequencing.platform` names the public instrument model; a flow-cell configuration included in a sequencing kit remains part of that kit's identity.

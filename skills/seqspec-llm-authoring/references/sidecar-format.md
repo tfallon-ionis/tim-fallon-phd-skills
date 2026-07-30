@@ -36,7 +36,7 @@ library_format:
     source_ids: [alithea_genomics_2026_full_length_brb_seq_user_guide]
 
 sequencing:
-  platform: Illumina
+  platform: NovaSeq X Plus
   index_read_configuration: known
   reads:
     - read_id: R1
@@ -85,6 +85,10 @@ artifacts: []
 onlists: []
 
 claims:
+  - claim_id: sequencing-platform
+    target: sequencing.platform
+    basis: documentary
+    source_ids: [illumina_2026_novaseq_x_reagents_20104705]
   - claim_id: library-kit-product
     target: library_format.representative_kit.product_name
     basis: documentary
@@ -141,6 +145,8 @@ Every documentary source requires a verbatim Zotero IEEE entry. Keep the citatio
 Artifacts are files rather than bibliography entries. Link each artifact to at least one cited source that establishes its distribution or provenance. An artifact need not have a fabricated Zotero entry of its own.
 
 `profile.seqspec_assay_id` must equal the native Seqspec `assay_id`. The qualified sidecar name makes the external origin of “assay” explicit; it is not a claim that the identifier names a biological assay or a consumer's Demultiplexing Specification.
+
+Use `sequencing.platform` for the exact public instrument model, such as `NovaSeq X Plus`, not for the manufacturer alone. Identify the manufacturer through `vendors` and native Seqspec `sequence_protocol`. When the sequencing kit includes its flow cell, keep the flow-cell configuration in the sequencing-kit product identity rather than duplicating it as another sidecar field.
 
 Store the completed or draft artifact set in `<output-root>/<seqspec-assay-id>/`, where the final path component exactly equals both identifiers above. Keep the Seqspec, provenance sidecar, visualization, and any local onlists together so relative onlist paths remain valid.
 
@@ -282,6 +288,7 @@ Examples of documentary targets:
 - `library_format.representative_kit.catalog_number`
 - `library_spec.<region_id>.min_len`
 - `library_spec.<region_id>.sequence_type`
+- `sequencing.platform`
 - `sequencing.sequence_kit.catalog_number`
 
 Examples of user-supplied targets:

@@ -1,6 +1,6 @@
 ---
 name: seqspec-llm-authoring
-description: Author an evidence-backed Illumina seqspec profile through a source-first interview, emit a provenance sidecar, validate both artifacts, and present a graphical confirmation. Use when a user asks to create, document, reconstruct, or validate a sequencing-library/read structure as seqspec from vendor PDFs, kit webpages, protocols, or expert knowledge.
+description: Author or derive an evidence-backed Illumina seqspec profile through a source-first interview, emit a provenance sidecar, validate both artifacts, and present a graphical confirmation. Use when a user asks to create, modify, adapt, clone, document, reconstruct, or validate a sequencing-library/read structure as seqspec from an existing profile, vendor PDFs, kit webpages, protocols, or expert knowledge.
 ---
 
 # Author a seqspec profile
@@ -11,6 +11,7 @@ Seqspec describes genomics data through the sequencing-library molecule, the rea
 
 Read [references/sidecar-format.md](references/sidecar-format.md) before emitting files. Read [references/barcode-semantics.md](references/barcode-semantics.md) whenever the library contains an index, barcode, UMI, or other molecular identifier.
 Read [references/illumina-run-metadata.md](references/illumina-run-metadata.md) when using `RunInfo.xml` or `RunParameters.xml` as run-level evidence.
+Read [references/profile-composition.md](references/profile-composition.md) when deriving from an existing profile or reasoning about profile identity, siblings, or concatenated acquisitions.
 
 ## Establish the runtime
 
@@ -25,6 +26,14 @@ Do not require a devcontainer or uv. Do not use generic search results in place 
 
 For development and regression testing, run `scripts/test.sh`. It installs the supported fork commit into an isolated uv environment before invoking the suite; do not substitute unpinned `--with seqspec`.
 
+## Choose the authoring mode
+
+- If the request supplies or clearly names an existing profile directory, enter derivation mode automatically.
+- If the request asks to modify, clone, or adapt an existing profile without identifying it, ask for the directory.
+- Otherwise, enter the source-first from-scratch workflow.
+
+State the selected mode and, for derivation, the resolved parent path before proceeding. Never silently convert a derivation request into from-scratch authoring.
+
 ## Start source-first
 
 1. Ask first for the internal colloquial library-format name. Record it only as a potentially non-unique alias.
@@ -35,6 +44,45 @@ For development and regression testing, run `scripts/test.sh`. It installs the s
 
 Do not allow user confirmation to replace missing documentary evidence. If authoritative sources conflict, present the conflict and record the user's selected claim, rejected claim, and rationale.
 
+## Derive from an existing profile
+
+Treat every completed parent profile as immutable. Changing its instrument, sequencing kit, flow-cell configuration, read allocation, orientation, library structure, or other technical claim creates a new Seqspec assay ID and output directory. Only byte-preserving revalidation or regeneration of derived HTML may operate in place.
+
+1. Resolve the parent directory and validate its lifecycle pair with the current composite validator before reusing it.
+2. Classify the parent:
+   - A valid complete parent is an evidence-backed baseline.
+   - A readable but stale or invalid parent may seed a draft; carry every inherited failure into `validation.blocking_gaps`.
+   - A missing or internally inconsistent parent must be repaired or reconstructed separately.
+3. Inventory the requested changes. Present an allowlisted semantic plan divided into **change**, **re-evaluate**, **preserve exactly**, and **regenerate**, and obtain confirmation.
+4. Copy the parent into temporary candidate storage. Never edit the completed parent or create a child that refers to files inside its directory.
+5. Reuse unchanged validated library structure, claims, barcode semantics, onlist projections, and onlist bytes. Copy local onlists byte-for-byte and verify their digests; retain authoritative public URLs.
+6. Replace superseded evidence instead of accumulating it. Remove sources and claims that support only the old acquisition; add authoritative sources and claims for the child.
+7. Re-evaluate instrument-dependent facts, including i5 orientation and platform-specific cycle accounting. Do not transfer a cycle-capacity rule between instrument families.
+8. Give the child a distinct, descriptive Seqspec assay ID. Include the differentiating acquisition characteristic when otherwise identical siblings would collide.
+9. For an acquisition sibling, retain the common family under `variant_of`, leave `previous_version` unset unless succession is explicitly established, and add a `same_library_format` relation targeting the concrete parent.
+10. Keep the child complete and standalone. Current relations express relatedness, not inheritance.
+
+Compare parsed YAML and payload digests with the tested helper. Allow only paths approved in the semantic plan:
+
+```bash
+python <this-skill-directory>/scripts/compare_profiles.py \
+  --parent <validated-parent-directory> \
+  --child <candidate-directory> \
+  --allow 'seqspec.assay_id' \
+  --allow 'seqspec.sequence_protocol' \
+  --allow 'seqspec.sequence_kit' \
+  --allow 'sidecar.profile.seqspec_assay_id' \
+  --allow 'sidecar.profile.relations*' \
+  --allow 'sidecar.sequencing.platform' \
+  --allow 'sidecar.sequencing.sequence_kit.*' \
+  --allow 'sidecar.sources*' \
+  --allow 'sidecar.claims*' \
+  --allow 'sidecar.validation.*' \
+  --allow 'files.seqspec.html'
+```
+
+Tailor the allowlist to the confirmed plan; the example is not permission to change every listed field. Review every reported allowed change. Block completion on any unexpected change.
+
 ## Capture identity and kits
 
 Require:
@@ -42,12 +90,15 @@ Require:
 - a stable, path-safe Seqspec assay ID for the concrete profile; it must be one directory-name component, not `.`, `..`, or a value containing `/` or `\`;
 - a technical library-format name and any explicitly documented format version;
 - a representative library-preparation kit with product name, manufacturer, catalog number, seqspec value, and sources;
+- an exact public instrument model, stored as the sidecar `sequencing.platform` and identified with its manufacturer in native Seqspec `sequence_protocol`;
 - a sequencing kit with product name, manufacturer, seqspec value, sources, and catalog number when documented;
 - a live-verified manufacturer URI in the form `https://www.wikidata.org/entity/Q...` for every vendor;
 - an optional internal sequencing-kit alias; accept `none`;
 - optional internal protocol `id` and `version`—never rename version to revision.
 
 Multiple kits may realize one library format. Record additional equivalent kits only when sources support the relationship; do not attempt an exhaustive catalog.
+
+When a sequencing kit includes the flow cell, encode the public flow-cell configuration in the sequencing-kit product identity instead of duplicating it as another sidecar field. Do not infer an exact instrument model from kit compatibility; one kit may support several models.
 
 Seqspec requires the native YAML field `assay_id`. In this skill's sidecar and prose, call the same value the **Seqspec assay ID** and store it as `profile.seqspec_assay_id`. This explicit qualifier contains Seqspec's overloaded terminology: never imply that the value identifies a biological assay, and never equate it with a consumer's Demultiplexing Specification ID unless that consumer establishes the mapping.
 
@@ -188,12 +239,14 @@ Treat errors and missing hard-gate evidence as non-waivable. Surface warnings an
 
 After preflight validation:
 
-1. Run `seqspec info` and show the result.
-2. Generate `seqspec.html` using `seqspec print -f seqspec-html -o seqspec.html seqspec.yaml`.
-3. Present the graphical summary and request explicit confirmation.
-4. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
-5. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
-6. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into `<output-root>/<seqspec-assay-id>/`.
-7. Report completion only after both automated validation and user confirmation.
+1. For a derivation, run `compare_profiles.py` with the confirmed allowlist and review every allowed change.
+2. Run `seqspec info` and show the result.
+3. Generate `seqspec.html` using `seqspec print -f seqspec-html -o seqspec.html seqspec.yaml`.
+4. Present the graphical summary and, for a derivation, its semantic diff; request explicit confirmation.
+5. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
+6. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
+7. For a derivation, repeat the semantic comparison after attestation; only attestation and confirmed generated-output changes may be newly different.
+8. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into `<output-root>/<seqspec-assay-id>/`.
+9. Report completion only after automated validation, semantic comparison when applicable, and user confirmation.
 
 If any gate remains unresolved, retain draft filenames and state the precise blocker.

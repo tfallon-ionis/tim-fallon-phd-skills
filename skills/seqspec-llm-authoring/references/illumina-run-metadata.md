@@ -59,6 +59,8 @@ For NextSeq 1000/2000 XLEAP-SBS, Illumina states that cartridges include 38 extr
 
 Apply this subtraction only when `RecipeName` establishes XLEAP-SBS. Verify other chemistry families independently. Confirm that the sum of acquired cycles does not exceed the total reagent cycles.
 
+Do not transfer this NextSeq 1000/2000 mapping to NovaSeq X Series merely because both use XLEAP-SBS branding. NovaSeq X run metadata may identify a marketed kit configuration through its flow-cell type and recipe even when naïve addition of R1, I1, I2, and R2 appears to exceed the marketed cycle label. Treat an executed cycle plan and its run metadata as corroborating evidence, then resolve the public product name and catalog number from the platform-specific manufacturer catalog. Never replace that evidence with a cross-platform arithmetic heuristic.
+
 Source: [Illumina NextSeq 1000/2000 reagents](https://www.illumina.com/products/by-type/sequencing-kits/cluster-gen-sequencing-reagents/nextseq-1000-2000-reagents.html).
 
 `RunParameters.xml` may identify separate flow-cell and cartridge components without naming the single orderable reagent-kit SKU. Resolve the public kit from:

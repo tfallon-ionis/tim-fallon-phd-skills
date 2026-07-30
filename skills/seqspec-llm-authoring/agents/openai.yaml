@@ -1,6 +1,6 @@
 interface:
   display_name: "Seqspec LLM Authoring"
-  short_description: "Author evidence-backed Illumina seqspec profiles"
-  default_prompt: "Use $seqspec-llm-authoring to interview me and produce a sourced, validated Illumina seqspec profile."
+  short_description: "Author or derive validated Illumina seqspec profiles"
+  default_prompt: "Use $seqspec-llm-authoring to create a sourced Illumina seqspec profile or derive one safely from an existing bundle."
 policy:
   allow_implicit_invocation: false

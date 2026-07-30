@@ -9,11 +9,13 @@ import unittest
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
+from unittest import mock
 
 import yaml
 
 from scripts.validate import (
     ValidationFailure,
+    fetch_remote_bytes,
     load_spec,
     stage_and_check,
     validate_allowed_index_pairs,
@@ -222,6 +224,15 @@ class ValidateTests(unittest.TestCase):
         (directory / "seqspec.yaml").write_text(yaml.safe_dump(spec, sort_keys=False))
         (directory / "provenance.sidecar.yaml").write_text(yaml.safe_dump(sidecar, sort_keys=False))
 
+    def test_public_fetch_uses_identified_http_client(self) -> None:
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b"AAAA\n"
+        with mock.patch("urllib.request.urlopen", return_value=response) as urlopen:
+            self.assertEqual(fetch_remote_bytes("https://example.org/onlist.txt"), b"AAAA\n")
+
+        request = urlopen.call_args.args[0]
+        self.assertIn("seqspec-llm-authoring", request.get_header("User-agent"))
+
     def test_complete_lifecycle_requires_canonical_provenance_filename(self) -> None:
         sidecar = base_sidecar()
 
@@ -315,6 +326,19 @@ class ValidateTests(unittest.TestCase):
                 "profile.seqspec_assay_id does not match native Seqspec assay_id",
                 result.stderr,
             )
+
+    def test_sidecar_platform_accepts_exact_illumina_model(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            spec = base_seqspec()
+            spec["sequence_protocol"] = "Illumina NovaSeq X Plus"
+            sidecar = base_sidecar()
+            sidecar["sequencing"]["platform"] = "NovaSeq X Plus"
+            self.write_pair(directory, spec, sidecar)
+
+            result = self.run_validator(directory)
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_onlist_inside_zip_is_resolved_without_persistent_copy(self) -> None:
         with tempfile.TemporaryDirectory() as raw:

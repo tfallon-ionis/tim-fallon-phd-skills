@@ -149,7 +149,7 @@
       "additionalProperties": false,
       "required": ["platform", "index_read_configuration", "reads", "sequence_kit"],
       "properties": {
-        "platform": {"const": "Illumina"},
+        "platform": {"$ref": "#/$defs/nonemptyString"},
         "index_read_configuration": {"enum": ["known", "unknown"]},
         "reads": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/read"}},
         "sequence_kit": {"$ref": "#/$defs/kit"}

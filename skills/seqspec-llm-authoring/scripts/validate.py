@@ -331,8 +331,17 @@ def match_container(expected: dict[str, Any], supplied: list[Path]) -> Path:
 
 
 def fetch_remote_bytes(url: str) -> bytes:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (compatible; seqspec-llm-authoring/1.1; "
+                "+https://github.com/tfallon-ionis/tim-fallon-phd-skills)"
+            )
+        },
+    )
     try:
-        with urllib.request.urlopen(url, timeout=120) as response:
+        with urllib.request.urlopen(request, timeout=120) as response:
             return response.read()
     except OSError as exc:
         raise ValidationFailure(f"cannot fetch authoritative onlist {url}: {exc}") from exc
