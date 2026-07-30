@@ -1,0 +1,160 @@
+seqspec_version: 0.4.0
+assay_id: mercurius-full-length-brb-seq-illumina-r1-28-i1-8-i2-8-r2-90-v1
+name: HT RNAseq v1
+doi: ''
+date: 15 July 2026
+description: Mercurius Full-Length BRB-seq acquired on an Illumina NextSeq 2000 as
+  R1 28, I1 8, I2 8, and R2 90 cycles. The standard TruSeq Read 1 and Read 2 sequencing-primer
+  sites are represented explicitly. A ballpark 22-42 nt oligo-dT homopolymer is represented
+  explicitly between the UMI and the targeted 160-200 nt cDNA insert. The V5C vendor
+  plate map is projected natively by seqspec; the four MF.UDI pairs are represented
+  by manually verified documentary transcriptions of the vendor guide's Table 2.
+modalities:
+- rna
+lib_struct: ''
+library_protocol: HT RNAseq v1
+library_kit: Mercurius Full-Length BRB-seq Library Preparation 4x96 kit (PN 11601)
+sequence_protocol: Illumina NextSeq 2000
+sequence_kit: NextSeq 1000/2000 P2 XLEAP-SBS Reagent Kit (100 Cycles)
+sequence_spec:
+- read_id: R1
+  name: Read 1
+  modality: rna
+  primer_id: read1_primer_boundary
+  min_len: 28
+  max_len: 28
+  strand: pos
+  files: []
+- read_id: I1
+  name: i7 (Index 1)
+  modality: rna
+  primer_id: read2_primer_boundary
+  min_len: 8
+  max_len: 8
+  strand: pos
+  files: []
+- read_id: I2
+  name: i5 (Index 2)
+  modality: rna
+  primer_id: read1_primer_boundary
+  min_len: 8
+  max_len: 8
+  strand: neg
+  files: []
+- read_id: R2
+  name: Read 2
+  modality: rna
+  primer_id: read2_primer_boundary
+  min_len: 90
+  max_len: 90
+  strand: neg
+  files: []
+library_spec:
+- region_id: rna
+  region_type: rna
+  name: Mercurius Full-Length BRB-seq library molecule
+  sequence_type: joined
+  sequence: NNNNNNNNACACTCTTTCCCTACACGACGCTCTTCCGATCTNNNNNNNNNNNNNNXXXXXXXXXXXXXXTTTTTTTTTTTTTTTTTTTTTTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXAGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNNN
+  min_len: 293
+  max_len: 353
+  onlist: null
+  regions:
+  - region_id: i5
+    region_type: index5
+    name: i5 (Index 2), MF.UDI design set
+    sequence_type: onlist
+    sequence: NNNNNNNN
+    min_len: 8
+    max_len: 8
+    onlist:
+      file_id: mf-udi-i5.txt
+      filename: mf-udi-i5.txt
+      filetype: txt
+      filesize: 36
+      url: onlists/mf-udi-i5.txt
+      urltype: local
+      md5: 4a304a56a291b6aa9aa95cc0c0995851
+      sequence_column_index: 0
+      skip_rows: 0
+    regions: []
+  - region_id: read1_primer_boundary
+    region_type: truseq_read1
+    name: TruSeq Read 1 sequencing-primer site
+    sequence_type: fixed
+    sequence: ACACTCTTTCCCTACACGACGCTCTTCCGATCT
+    min_len: 33
+    max_len: 33
+    onlist: null
+    regions: []
+  - region_id: sample_barcode
+    region_type: barcode
+    name: V5C sample barcode
+    sequence_type: onlist
+    sequence: NNNNNNNNNNNNNN
+    min_len: 14
+    max_len: 14
+    onlist:
+      file_id: barcodes_v5C_96_brb.txt
+      filename: barcodes_v5C_96_brb.txt
+      filetype: txt
+      filesize: 1832
+      url: onlists/barcodes_v5C_96_brb.txt
+      urltype: local
+      md5: 02547ac6c4c1981ef1e02ace54389c65
+      sequence_column_index: 1
+      skip_rows: 1
+    regions: []
+  - region_id: umi
+    region_type: umi
+    name: Unique molecular identifier
+    sequence_type: random
+    sequence: XXXXXXXXXXXXXX
+    min_len: 14
+    max_len: 14
+    onlist: null
+    regions: []
+  - region_id: oligo_dt
+    region_type: poly_T
+    name: Ballpark 22-42 nt oligo-dT homopolymer
+    sequence_type: fixed
+    sequence: TTTTTTTTTTTTTTTTTTTTTT
+    min_len: 22
+    max_len: 42
+    onlist: null
+    regions: []
+  - region_id: cdna
+    region_type: cdna
+    name: Targeted 160-200 nt cDNA insert
+    sequence_type: random
+    sequence: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    min_len: 160
+    max_len: 200
+    onlist: null
+    regions: []
+  - region_id: read2_primer_boundary
+    region_type: truseq_read2
+    name: TruSeq Read 2 sequencing-primer site, 5-prime-to-3-prime molecule orientation
+    sequence_type: fixed
+    sequence: AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+    min_len: 34
+    max_len: 34
+    onlist: null
+    regions: []
+  - region_id: i7
+    region_type: index7
+    name: i7 (Index 1), MF.UDI design set
+    sequence_type: onlist
+    sequence: NNNNNNNN
+    min_len: 8
+    max_len: 8
+    onlist:
+      file_id: mf-udi-i7.txt
+      filename: mf-udi-i7.txt
+      filetype: txt
+      filesize: 36
+      url: onlists/mf-udi-i7.txt
+      urltype: local
+      md5: 37c7ef0815b737a7bc996488f45139c4
+      sequence_column_index: 0
+      skip_rows: 0
+    regions: []
