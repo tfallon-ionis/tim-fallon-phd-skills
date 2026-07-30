@@ -50,6 +50,10 @@ The canonical authoring materialization of a seqspec profile. Authoritative publ
 
 A derived materialization with onlist URLs downloaded as text files for offline packaging and rewritten to package-relative local paths. It represents the same profile when the onlist bytes, projections, library structure, read structure, and pairing constraints are unchanged, even though its `seqspec.yaml` content digest differs.
 
+### offline-ready bundle
+
+The verified distribution directory for an offline-packaged seqspec. It lives at `<output-root>/offline-bundles/<seqspec-assay-id>/`, contains all onlists beneath `onlists/`, and preserves the canonical provenance sidecar byte-for-byte. It is offered only after graphical confirmation and produced only from an attested complete source-linked profile.
+
 ## Version relationships
 
 - `previous_version`: an explicitly established successor/predecessor relationship between managed artifacts.
@@ -70,3 +74,5 @@ A derived materialization with onlist URLs downloaded as text files for offline 
 10. A completed profile is immutable when used as a derivation parent; a changed acquisition is emitted as a complete sibling.
 11. `variant_of` and `same_library_format` express relatedness, never inheritance or overlay composition.
 12. The sidecar `sequencing.platform` names the public instrument model; a flow-cell configuration included in a sequencing kit remains part of that kit's identity.
+13. Offline packaging rewrites only native onlist location fields; every other Seqspec value and the complete provenance sidecar remain equivalent to the canonical source-linked profile.
+14. Offline-ready bundles are sibling distributions under `offline-bundles/`, never children of or replacements for canonical profile output directories.

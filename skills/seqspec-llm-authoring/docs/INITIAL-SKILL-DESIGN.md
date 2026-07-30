@@ -81,7 +81,7 @@ The closest external vocabulary is the SAM/BAM tag set (`BC`, `CB`/`CR`, `MI`, `
 
 Emit `provenance.sidecar.yaml` alongside a completed seqspec. The sidecar requires `sources_schema_version: 1.1.0`; no other schema version is supported.
 
-The skill emits a source-linked authoring form in which authoritative public onlists retain their source URLs. A downstream consumer may derive an offline-packaged form with onlist URLs downloaded as text files for offline packaging and rewritten to package-relative local paths. When the underlying onlist bytes, projections, library/read structure, and pairing constraints are unchanged, this packaging rewrite changes the `seqspec.yaml` content digest but does not create a new profile or profile version. The consumer bundle manifest records the packaged Seqspec and payload digests.
+The skill emits a source-linked authoring form in which authoritative public onlists retain their source URLs. A downstream consumer may derive an offline-packaged form with onlist URLs downloaded as text files for offline packaging and rewritten to package-relative local paths. When the underlying onlist bytes, projections, library/read structure, and pairing constraints are unchanged, this packaging rewrite changes the `seqspec.yaml` content digest but does not create a new profile or profile version.
 
 The sidecar contains:
 

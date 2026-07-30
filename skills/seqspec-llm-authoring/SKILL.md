@@ -244,10 +244,42 @@ After preflight validation:
 2. Run `seqspec info` and show the result.
 3. Generate `seqspec.html` using `seqspec print -f seqspec-html -o seqspec.html seqspec.yaml`.
 4. Present the graphical summary and, for a derivation, its semantic diff; request explicit confirmation.
-5. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
-6. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
-7. For a derivation, repeat the semantic comparison after attestation; only attestation and confirmed generated-output changes may be newly different.
-8. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into `<output-root>/<seqspec-assay-id>/`.
-9. Report completion only after automated validation, semantic comparison when applicable, and user confirmation.
+5. After the user confirms the graphical summary, ask: “Do you also want an offline-ready bundle? It will materialize every onlist under `onlists/` and rewrite only the Seqspec onlist locations to package-relative local paths.” Record the answer. Do not offer offline packaging for a draft.
+6. Set `validation.user_confirmation.status: confirmed` and record its UTC `confirmed_at` timestamp.
+7. Run the same composite validator again without `--no-write-attestation`. This final pass records status, validation timestamp, seqspec CLI version, sidecar schema version, and accepted warnings.
+8. For a derivation, repeat the semantic comparison after attestation; only attestation and confirmed generated-output changes may be newly different.
+9. Move the attested pair, confirmed HTML, and any documentary-transcription onlists from temporary storage into `<output-root>/<seqspec-assay-id>/`.
+10. If the user declined offline packaging, leave the existing workflow and output layout unchanged. If the user accepted it, package only after the canonical source-linked profile has been attested and moved:
+
+    ```bash
+    python <this-skill-directory>/scripts/offline_bundle.py package \
+      --source-profile <output-root>/<seqspec-assay-id> \
+      --output-root <output-root> \
+      [--onlist-container <archive-or-root-if-needed> ...]
+    ```
+
+    This creates `<output-root>/offline-bundles/<seqspec-assay-id>/`, refuses to overwrite an existing bundle, and verifies it before reporting success. It copies local onlists byte-for-byte, fetches authoritative public onlists as exact source bytes, extracts supplied-container onlists when their previously validated container is supplied, rewrites only each native `onlist.url` and `onlist.urltype`, and keeps the provenance sidecar byte-identical. The verifier checks native MD5, sidecar SHA-256 and sizes, semantic equivalence apart from onlist locations, containment under `onlists/`, and vanilla `seqspec check` with network proxies blocked.
+11. Report completion only after automated validation, semantic comparison when applicable, user confirmation, and requested offline-bundle verification.
 
 If any gate remains unresolved, retain draft filenames and state the precise blocker.
+
+The default two-form layout is:
+
+```text
+<output-root>/
+├── <seqspec-assay-id>/                 # canonical source-linked profile
+└── offline-bundles/
+    └── <seqspec-assay-id>/             # derived offline distribution
+        ├── seqspec.yaml
+        ├── provenance.sidecar.yaml
+        └── onlists/
+            └── ...
+```
+
+The final directory component remains the Seqspec assay ID in both forms. Do not put the offline distribution inside the canonical profile directory and do not treat it as a new profile or version. Recheck an existing offline bundle with:
+
+```bash
+python <this-skill-directory>/scripts/offline_bundle.py verify \
+  --source-profile <output-root>/<seqspec-assay-id> \
+  --bundle <output-root>/offline-bundles/<seqspec-assay-id>
+```
